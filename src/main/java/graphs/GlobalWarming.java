@@ -17,7 +17,7 @@ package graphs;
  *      | 4 | 4 | 1 | 4 | 2 |
  *      | 1 | 4 | 2 | 3 | 6 |
  *      | 1 | 1 | 1 | 6 | 3 |
- * 
+ *
  * If we replace the submerged entries
  * by _, it gives the following matrix
  *
@@ -44,15 +44,46 @@ package graphs;
  */
 public class GlobalWarming {
 
+    int nIsland;
+    Point[][]id;
+
+
 
     /**
-     * Constructor. The run time of this method is expected to be in 
+     * Constructor. The run time of this method is expected to be in
      * O(n x log(n)) with n the number of entry in the altitude matrix.
      *
      * @param altitude the matrix of altitude
      * @param waterLevel the water level under which the entries are submerged
      */
     public GlobalWarming(int [][] altitude, int waterLevel) {
+
+        id=new Point[altitude.length][altitude[0].length];
+        nIsland=id.length*id[0].length;
+        for(int i = 0; i<altitude.length; i++){
+            for(int j = 0; j<altitude[i].length; j++){
+                if(altitude[i][j]>waterLevel){
+                    id[i][j]= new Point(i,j);
+                }else{
+                    id[i][j]= new Point(-1,-1);
+                    nIsland--;
+                }
+            }
+        }
+        for(int i = 0; i<id.length; i++){
+            for(int j = 0; j<id[i].length-1; j++){
+                if(!id[i][j].equals(new Point(-1,-1)) && !id[i][j+1].equals(new Point(-1,-1))){
+                    nIsland--;
+                    id[i][j+1]=id[i][j];
+                }
+                if(i!=id.length-1){
+                    if(!id[i][j].equals(new Point(-1,-1)) && !id[i+1][j].equals(new Point(-1,-1))){
+                        nIsland--;
+                        id[i+1][j]=id[i][j];
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -61,7 +92,7 @@ public class GlobalWarming {
      * Expected time complexity O(1)
      */
     public int nbIslands() {
-         return 0;
+        return nIsland;
     }
 
     /**
@@ -73,7 +104,7 @@ public class GlobalWarming {
      * @param p2 the second point to compare
      */
     public boolean onSameIsland(Point p1, Point p2) {
-         return false;
+        return id[p1.getX()][p1.getY()].equals(id[p2.getX()][p2.getY()]);
     }
 
 

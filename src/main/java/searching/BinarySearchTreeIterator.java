@@ -1,5 +1,6 @@
 package searching;
 
+import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -22,7 +23,7 @@ import java.util.NoSuchElementException;
  * The iterator visits the nodes in this order: 3, 8, 9, 11, 12, 14, 15, 18, 20
  * We ask you to complete the BSTIterator class, which must implement the Iterator interface.
  *
- * The BSTNode are generic over their key (the integers in the example above) and implement the 
+ * The BSTNode are generic over their key (the integers in the example above) and implement the
  * BinaryNode and KeyNode interface available in the utils package.
  *
  * Hint: You have two strategies to implement this iterator Fail-Fast and Fail-Safe
@@ -98,20 +99,54 @@ public class BinarySearchTreeIterator<Key extends Comparable<Key>> implements It
 
     private class BSTIterator implements Iterator<Key> {
 
+        Integer current;
+        ArrayList<Key> list;
 
-        public BSTIterator() {
+        int s;
+        public void listed(BSTNode node) {
+            if (node!=null && node.left != null){
+                listed(node.left);
+            }
+            list.add((Key) node.key);
+            if (node!=null && node.right!=null){
+                listed(node.right);
+            }
+        }
+
+        public BSTIterator(){
+            list = new ArrayList<>();
+            if (root==null){
+                current = null;
+            }else{
+                current = 0;
+                listed(root);
+                s = list.size();
+            }
         }
 
         @Override
         public boolean hasNext() {
-			// TODO
-			 return false;
+            if(s != size()){
+                throw new ConcurrentModificationException();
+            }
+            return current!=null;
         }
 
         @Override
         public Key next() {
-			// TODO
-			 return null;
+            if(current==null){
+                throw new NoSuchElementException();
+            }
+            if(s!=size()){
+                throw new ConcurrentModificationException();
+            }
+            Key key = list.get(current);
+            if(current<s-1){
+                current++;
+            }else{
+                current = null;
+            }
+            return key;
         }
     }
 
@@ -190,4 +225,3 @@ public class BinarySearchTreeIterator<Key extends Comparable<Key>> implements It
         }
     }
 }
-

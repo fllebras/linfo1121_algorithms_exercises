@@ -30,7 +30,13 @@ public class CardSorter {
             //they are in the increasing order.
 
             // TODO
-
+            for (int i =0; i< list.getSize()-1; i++){
+                if(list.getFirst()> list.getSecond()){
+                    list.swap();
+                }
+                list.pop();
+            }
+            list.pop();
         }
         // here, if you followed the invariant proposed above, the list should be sorted!
     }

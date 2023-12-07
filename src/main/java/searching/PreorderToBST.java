@@ -3,23 +3,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class PreorderToBST {
-    /* 
-    * We ask you to implement the reconstruction of a BST starting
-    * from a sequence of keys corresponding to preorder traversal of the BST.
-    *
-    * Your algorithm should execute in linear time (number of keys).
-    * BST Node's only contains integer key but no associated value.
-    *
-    * For example, for the input [10,5,7,14,12] the reconstructed BST should be like this :
-    *
-    *                             10
-    *                              |
-    *                  5 ------------------------ 14
-    *                  |                          |
-    *                  ------ 7           12 ------
-    *                                 
-    *                                     
-    */
+    /*
+     * We ask you to implement the reconstruction of a BST starting
+     * from a sequence of keys corresponding to preorder traversal of the BST.
+     *
+     * Your algorithm should execute in linear time (number of keys).
+     * BST Node's only contains integer key but no associated value.
+     *
+     * For example, for the input [10,5,7,14,12] the reconstructed BST should be like this :
+     *
+     *                             10
+     *                              |
+     *                  5 ------------------------ 14
+     *                  |                          |
+     *                  ------ 7           12 ------
+     *
+     *
+     */
 
     protected Node root;
 
@@ -56,7 +56,23 @@ public class PreorderToBST {
 
     public Node preorderRead(int [] preOrderInput, int i, int min, int max) {
         // !!!!!!! TODO !!!!!!!!
-         return new Node(null,null,preOrderInput[0]);
+        Node left;
+        Node right;
+        if(i<preOrderInput.length){
+            if(preOrderInput[i]<max && preOrderInput[i]>min) {
+                left = preorderRead(preOrderInput, i + 1, min, preOrderInput[i]);
+                int size = 0;
+                if(left != null){
+                    size = left.size;
+                }
+                right = preorderRead(preOrderInput, size + i + 1, preOrderInput[i], max);
+            }else{
+                return null;
+            }
+            return new Node(left,right,preOrderInput[i]);
+        }
+        return null;
+
     }
 
     public int[] preorderWrite() {
@@ -91,19 +107,19 @@ public class PreorderToBST {
         public Node right;
         public int key;
         public int size;
-    
+
         public Node(Node left, Node right, int key) {
             this.left = left;
             this.right = right;
             this.key = key;
             this.size = (left == null ? 0 : left.size) + (right == null ? 0 : right.size) + 1;
         }
-    
+
         @Override
         public String toString() {
             return "new Node("+left+","+right+","+key+")";
         }
-    
+
         @Override
         public boolean equals(Object obj) {
             if (obj != null) {
@@ -118,18 +134,18 @@ public class PreorderToBST {
                 return false;
             }
         }
-    
+
         public int [] preOrder() {
             ArrayList<Integer> acc = new ArrayList<>();
             preOrder(acc);
             return Arrays.stream(acc.toArray(new Integer[]{})).mapToInt(i -> i).toArray();
         }
-    
+
         private void preOrder(ArrayList<Integer> acc) {
             acc.add(key);
             if (left != null) left.preOrder(acc);
             if (right != null) right.preOrder(acc);
         }
-    
+
     }
 }

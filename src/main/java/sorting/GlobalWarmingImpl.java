@@ -1,5 +1,6 @@
 package sorting;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -59,11 +60,20 @@ abstract class GlobalWarming {
 
 public class GlobalWarmingImpl extends GlobalWarming {
 
+    ArrayList<Integer> list = new ArrayList<>();
+    Integer[] sorted;
 
     public GlobalWarmingImpl(int[][] altitude) {
         super(altitude);
         // TODO
         // expected pre-processing time in the constructror : O(n^2 log(n^2))
+        for(int i = 0; i< altitude.length; i++){
+            for(int j = 0; j<altitude[i].length; j++){
+                list.add(altitude[i][j]);
+            }
+        }
+        sorted = list.toArray(new Integer[0]);
+        Arrays.sort(sorted);
 
     }
 
@@ -75,9 +85,13 @@ public class GlobalWarmingImpl extends GlobalWarming {
     public int nbSafePoints(int waterLevel) {
         // TODO
         // expected time complexity O(log(n^2))
-         return -1;
+        int n = sorted.length;
+        int i = 0;
+        while(i<sorted.length && sorted[i]<=waterLevel){
+            n--;
+            i++;
+        }
+        return n;
     }
-
-
 
 }

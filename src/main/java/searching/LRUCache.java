@@ -1,5 +1,8 @@
 package searching;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+
 /**
  * We are interested in the implementation of an LRU cache,
  * i.e. a (hash)-map of limited capacity where the addition of
@@ -57,16 +60,57 @@ public class LRUCache<K,V> {
 
     private int capacity;
 
+    private HashMap<K,Node> hashMap;
+    private LinkedList<Node> list;
+    private Node head;
+    private Node tail;
+
+    private class Node {
+        private K key;
+        private V value;
+
+        public Node(K key, V value){
+            this.key = key;
+            this.value = value;
+        }
+    }
+
 
     public LRUCache(int capacity) {
         this.capacity = capacity;
+        this.hashMap = new HashMap<K,Node>(this.capacity);
+        this.list = new LinkedList<Node>();
     }
 
     public V get(K key) {
-         return null;
+        Node node = this.hashMap.get(key);
+        if (node!=null){
+            this.list.remove(node);
+            this.list.add(node);
+            this.head=this.list.peekFirst();
+            this.tail=this.list.peekLast();
+            return node.value;
+        }
+        return null;
     }
 
     public void put(K key, V value) {
+        Node node = this.hashMap.get(key);
+        if (node==null){
+            if(this.hashMap.size()==this.capacity){
+                this.hashMap.remove(this.head.key);
+                this.list.removeFirst();
+            }
+            this.tail = new Node(key,value);
+            this.list.add(this.tail);
+            this.hashMap.put(key,this.tail);
+        }else{
+            this.list.remove(node);
+            this.tail = new Node(key,value);
+            this.list.add(this.tail);
+            this.hashMap.replace(key,this.tail);
+        }
+        this.head = this.list.peekFirst();
     }
 
 }

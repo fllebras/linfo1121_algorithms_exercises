@@ -54,7 +54,10 @@ public abstract class FList<A> implements Iterable<A> {
     // return the length of the list
     public final int length() {
         // TODO
-         return -1;
+        if (this.isEmpty()){
+            return 0;
+        }
+        return this.tail().length()+1;
     }
 
     // return the head element of the list
@@ -76,13 +79,27 @@ public abstract class FList<A> implements Iterable<A> {
     // return a list on which each element has been applied function f
     public final <B> FList<B> map(Function<A,B> f) {
         // TODO
-         return null;
+        if (this.isEmpty()){
+            return FList.nil();
+        }
+        FList<B> mapped;
+        mapped = this.tail().map(f);
+        mapped = mapped.cons(f.apply(this.head()));
+        return mapped;
     }
 
     // return a list on which only the elements that satisfies predicate are kept
     public final FList<A> filter(Predicate<A> f) {
         // TODO
-         return null;
+        if (this.isEmpty()){
+            return FList.nil();
+        }
+        FList<A> filtered;
+        filtered=this.tail().filter(f);
+        if(f.test(this.head())){
+            filtered = filtered.cons(this.head());
+        }
+        return filtered;
     }
 
 
@@ -95,12 +112,14 @@ public abstract class FList<A> implements Iterable<A> {
 
             public boolean hasNext() {
                 // TODO
-                 return false;
+                return current.isNotEmpty();
             }
 
             public A next() {
                 // TODO
-                 return null;
+                A element = current.head();
+                current = current.tail();
+                return element;
             }
 
             public void remove() {
@@ -116,34 +135,38 @@ public abstract class FList<A> implements Iterable<A> {
         @Override
         public A head() {
             // TODO
-             return null;
+            throw new IllegalArgumentException();
         }
 
         @Override
         public FList<A> tail() {
             // TODO
-             return null;
+            throw new IllegalArgumentException();
         }
     }
 
     private static final class Cons<A> extends FList<A> {
 
         // TODO add instance variables
+        A first;
+        FList<A> next;
 
 
         Cons(A a, FList<A> tail) {
+            first = a;
+            next = tail;
         }
 
         @Override
         public A head() {
             // TODO
-             return null;
+            return first;
         }
 
         @Override
         public FList<A> tail() {
             // TODO
-             return null;
+            return next;
         }
     }
 

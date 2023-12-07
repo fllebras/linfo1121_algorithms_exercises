@@ -1,6 +1,9 @@
 package sorting;
 
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * Author Pierre Schaus
  *
@@ -51,13 +54,57 @@ public class Union {
      * Returns the union of the intervals given in parameters.
      * This is the minimal array of (sorted) intervals covering
      * exactly the same points than the intervals in parameter.
-     * 
+     *
      * @param intervals the intervals to unite.
      */
     public static Interval[] union(Interval[] intervals) {
         // TODO
-         return new Interval[]{};
+        int N = intervals.length;
+        Arrays.sort(intervals);
+
+        ArrayList<Interval> result = new ArrayList<>();
+        int min = intervals[0].min;
+        int max = intervals[0].max;
+        for (int i = 1; i < N; i++){
+            if(intervals[i].min<=max){
+                max = Math.max(max,intervals[i].max);
+            } else{
+                result.add(new Interval(min,max));
+                min = intervals[i].min;
+                max = intervals[i].max;
+            }
+        }
+        result.add(new Interval(min,max));
+        return result.toArray(new Interval[0]);
 
     }
 
+    /*
+    private static void sort(Interval[] a, int lo, int hi){
+            if (hi <= lo) {
+                return;
+            }
+            int lt = lo, i = lo+1, gt = hi;
+            Interval v = a[lo];
+            while (i <= gt){
+                int cmp = a[i].compareTo(v);
+                if (cmp < 0){
+                    Interval temp = a[lt];
+                    a[lt]=a[i];
+                    a[i]=temp;
+                    lt++;
+                    i++;
+                }
+                else if (cmp > 0) {
+                    Interval temp = a[i];
+                    a[i]=a[gt];
+                    a[gt]=temp;
+                    gt--;
+                }
+                else i++;
+            } // Now a[lo..lt-1] < v = a[lt..gt] < a[gt+1..hi].
+            sort(a, lo, lt - 1);
+            sort(a, gt + 1, hi);
+        }
+        */
 }

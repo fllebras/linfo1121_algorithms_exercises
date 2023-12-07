@@ -106,7 +106,30 @@ public class Median {
      */
     public static int median(Vector vec, int lo, int hi) {
         // TODO
-         return -1;
+        sort(vec,lo,hi);
+        return(vec.get(lo+(hi-lo)/2));
     }
 
+    public static void sort(Vector vec, int lo, int hi) {
+        if (hi <= lo) {
+            return;
+        }
+        int lt = lo, i = lo + 1, gt = hi;
+        int v = vec.get(lo);
+        while (i <= gt) {
+            int cmp = vec.get(i) - v;
+            if (cmp < 0) {
+                vec.swap(lt, i);
+                lt++;
+                i++;
+            } else if (cmp > 0) {
+                vec.swap(i, gt);
+                gt--;
+            } else {
+                i++;
+            }
+        } // Now vec[lo..lt-1] < v = vec[lt..gt] < vec[gt+1..hi].
+        sort(vec, lo, lt - 1);
+        sort(vec, gt + 1, hi);
+    }
 }

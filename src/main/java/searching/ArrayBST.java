@@ -32,7 +32,7 @@ import java.util.ArrayList;
  *  You can implement the get method before the put method if you prefer since
  *  the two methods will be graded separately.
  *
- *  You cannot add of change the fields already declared, nor change
+ *  You cannot add or change the fields already declared, nor change
  *  the signatures of the methods in this
  *  class but feel free to add methods if needed.
  *
@@ -64,7 +64,42 @@ public class ArrayBST<Key extends Comparable<Key>, Value> {
      * @return true if the key was added, false if already present and the value has simply been erased
      */
     public boolean put(Key key, Value val) {
-         return false;
+        if (this.keys.isEmpty()){
+            this.keys.add(key);
+            this.values.add(val);
+            this.idxLeftNode.add(NONE);
+            this.idxRightNode.add(NONE);
+            return true;
+        }
+        int i = 0;
+        while(true) {
+            if (key.compareTo(this.keys.get(i)) > 0) {
+                if (this.idxRightNode.get(i) == NONE) {
+                    this.keys.add(key);
+                    this.values.add(val);
+                    this.idxRightNode.set(i, this.idxRightNode.size());
+                    this.idxLeftNode.add(NONE);
+                    this.idxRightNode.add(NONE);
+                    return true;
+                } else {
+                    i = this.idxRightNode.get(i);
+                }
+            } else if (key.compareTo(this.keys.get(i)) < 0) {
+                if (this.idxLeftNode.get(i) == NONE) {
+                    this.keys.add(key);
+                    this.values.add(val);
+                    this.idxLeftNode.set(i, this.idxLeftNode.size());
+                    this.idxLeftNode.add(NONE);
+                    this.idxRightNode.add(NONE);
+                    return true;
+                } else {
+                    i = this.idxLeftNode.get(i);
+                }
+            } else {
+                this.values.set(i, val);
+                return false;
+            }
+        }
     }
 
     /**
@@ -74,7 +109,22 @@ public class ArrayBST<Key extends Comparable<Key>, Value> {
      * @return the value attached to this key, null if the key is not present
      */
     public Value get(Key key) {
-         return null;
+        int i = 0;
+        while(true){
+            if(key.compareTo(this.keys.get(i))>0){
+                if(this.idxRightNode.get(i)==NONE){
+                    return null;
+                }
+                i=idxRightNode.get(i);
+            }else if(key.compareTo(this.keys.get(i))<0){
+                if(this.idxLeftNode.get(i)==NONE){
+                    return null;
+                }
+                i=idxLeftNode.get(i);
+            }else{
+                return this.values.get(i);
+            }
+        }
     }
 
 

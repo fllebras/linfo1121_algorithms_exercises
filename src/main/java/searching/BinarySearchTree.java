@@ -34,7 +34,20 @@ public class BinarySearchTree {
      * @param value the value we want to ceil
      */
     public static Integer ceil(BSTNode<Integer> root, int value) {
-         return null;
+        if(root.key.compareTo(value)<0){
+            if(root.right!=null){
+                return ceil(root.right,value);
+            }
+        }else{
+            if(root.left!=null){
+                Integer current = ceil(root.left,value);
+                if(current != null){
+                    return current;
+                }
+            }
+            return root.key;
+        }
+        return null;
     }
 
 
@@ -114,4 +127,3 @@ public class BinarySearchTree {
     }
 
 }
-

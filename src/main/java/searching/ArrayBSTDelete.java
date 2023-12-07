@@ -2,6 +2,7 @@ package searching;
 
 import java.util.ArrayList;
 
+//lea.debrakeleer@student.uclouvain.be
 
 /**
  *  We study a BST representation using an arrayList internal representation.
@@ -53,6 +54,7 @@ public class ArrayBSTDelete<Key extends Comparable<Key>, Value> {
 
     public ArrayList<Integer> idxLeftNode; // idxLeftNode[i] = index of left node of i
     public ArrayList<Integer> idxRightNode; // idxRightNode[i] = index of right node of i
+    public ArrayList<Boolean> deleted;
 
 
     final int NONE = -1;
@@ -62,6 +64,7 @@ public class ArrayBSTDelete<Key extends Comparable<Key>, Value> {
         values = new ArrayList<>();
         idxLeftNode = new ArrayList<>();
         idxRightNode = new ArrayList<>();
+        deleted = new ArrayList<>();
     }
 
     private void addNode(Key key, Value val) {
@@ -69,6 +72,7 @@ public class ArrayBSTDelete<Key extends Comparable<Key>, Value> {
         values.add(val);
         idxLeftNode.add(NONE);
         idxRightNode.add(NONE);
+        deleted.add(false);
     }
 
     /**
@@ -80,6 +84,12 @@ public class ArrayBSTDelete<Key extends Comparable<Key>, Value> {
      */
     public boolean put(Key key, Value val) {
         if (!values.isEmpty()) {
+            int x = getNodeIndex(key);
+            if (x != NONE && deleted.get(x)){
+                values.set(x,val);
+                deleted.set(x,false);
+                return true;
+            }
             int i = 0; // start at the root
             // the new node will be created at index values.size
             ArrayList<Integer> idxChild;
@@ -111,7 +121,7 @@ public class ArrayBSTDelete<Key extends Comparable<Key>, Value> {
      */
     public Value get(Key key) {
         int i = getNodeIndex(key);
-        if (i == NONE) return null;
+        if (i == NONE || deleted.get(i)) return null;
         return values.get(i);
     }
 
@@ -124,7 +134,9 @@ public class ArrayBSTDelete<Key extends Comparable<Key>, Value> {
             int i = 0;
             while (i != NONE) {
                 int cmp = key.compareTo(keys.get(i));
-                if (cmp == 0) return i;
+                if (cmp == 0){
+                    return i;
+                }
                 else if (cmp < 0) i = idxLeftNode.get(i);
                 else i = idxRightNode.get(i);
             }
@@ -139,7 +151,10 @@ public class ArrayBSTDelete<Key extends Comparable<Key>, Value> {
      */
     public boolean delete(Key key) {
         // TODO
-         return false;
+        int i = getNodeIndex(key);
+        if (i == NONE || deleted.get(i)) return false;
+        deleted.set(i,true);
+        return true;
     }
 
 
