@@ -1,9 +1,6 @@
 package searching;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 
 /**
@@ -26,8 +23,11 @@ import java.util.TreeMap;
 class BirthdayMap {
     // Hint: feel free to use existing java classes from Java such as java.util.TreeMap
 
+    TreeMap<String,ArrayList<Person>> bdaymap;
+
     BirthdayMap() {
         // TODO
+        bdaymap = new TreeMap<>();
     }
 
     /**
@@ -39,6 +39,15 @@ class BirthdayMap {
      */
     void addPerson(Person person) {
         // TODO
+        if(!this.bdaymap.containsKey(person.birthday)){
+            ArrayList<Person> persons = new ArrayList<>();
+            persons.add(person);
+            this.bdaymap.put(person.birthday,persons);
+        }else{
+            ArrayList<Person> persons = this.bdaymap.get(person.birthday);
+            persons.add(person);
+            this.bdaymap.put(person.birthday,persons);
+        }
     }
 
     /**
@@ -50,7 +59,7 @@ class BirthdayMap {
      */
     List<Person> getPeopleBornOnDate(String date) {
         // TODO
-         return null;
+        return this.bdaymap.get(date);
     }
 
 
@@ -64,7 +73,14 @@ class BirthdayMap {
      */
     List<Person> getPeopleBornInYear(String year) {
         // TODO
-         return null;
+        String begin = year+"-01-01";
+        String end = year+"-12-31";
+        Collection<ArrayList<Person>> persons = this.bdaymap.subMap(begin, true, end, true).values();
+        ArrayList<Person> yearlist = new ArrayList<>();
+        for(ArrayList<Person> person : persons){
+            yearlist.addAll(person);
+        }
+        return yearlist;
     }
 
 
