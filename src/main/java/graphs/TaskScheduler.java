@@ -1,11 +1,8 @@
 package graphs;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-    /**
+/**
      * The class TaskScheduler allows
      * to declare a set of tasks with their dependencies.
      * You have to implement the method:
@@ -58,7 +55,22 @@ import java.util.Map;
          */
         public boolean isValid(List<String> schedule) {
             // TODO
-             return false;
+            List<String> check = new ArrayList<>();
+            for(String task : schedule){
+                if(check.contains(task)){
+                    return false;
+                }
+                for(String dependency : this.graph.get(task)){
+                    if(!check.contains(dependency)){
+                        return false;
+                    }
+                }
+                check.add(task);
+            }
+            if(check.size()!=this.graph.size()){
+                return false;
+            }
+            return true;
         }
 
 

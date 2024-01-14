@@ -40,6 +40,20 @@ public class WordTransformationSP {
         return s.substring(0, start) + new StringBuilder(s.substring(start, end)).reverse().toString() + s.substring(end);
     }
 
+    static class Entry implements Comparable<Entry>{
+        String value;
+        int dist;
+        Entry(String content, int value){
+            this.value = content;
+            this.dist = value;
+        }
+
+        @Override
+        public int compareTo(Entry o) {
+            return this.dist - o.dist;
+        }
+    }
+
     /**
      * Compute the minimal cost from string "from" to string "to" representing the shortest path
      *
@@ -49,7 +63,24 @@ public class WordTransformationSP {
      */
     public static int minimalCost(String from, String to) {
         // TODO
-         return 0;
+        HashMap<String,Integer> distTo = new HashMap<>();
+        PriorityQueue<Entry> pq = new PriorityQueue<>();
+        pq.add(new Entry(from,0));
+        distTo.put(from,0);
+        while (!pq.isEmpty()){
+            Entry n = pq.poll();
+            String v = n.value;
+            for(int i=0;i<v.length()-1;i++){
+                for(int j=i+2; j<=v.length();j++){
+                    String w = rotation(v,i,j);
+                    if(!distTo.containsKey(w) || distTo.get(w)>distTo.get(v)+(j-i)){
+                        distTo.put(w,distTo.get(v)+(j-i));
+                        pq.add(new Entry(w,distTo.get(v)+(j-i)));
+                    }
+                }
+            }
+        }
+        return distTo.get(to);
     }
 
 

@@ -57,7 +57,7 @@ public class MinMaxHeap<Key extends Comparable<Key>> {
      * Expected time complexity: O(1)
      */
     public Key min() {
-         return null;
+         return this.content[1];
     }
 
     /**
@@ -65,7 +65,18 @@ public class MinMaxHeap<Key extends Comparable<Key>> {
      * Expected time complexity: O(1)
      */
     public Key max() {
-         return null;
+        if(this.size>2){
+            if (higherThan(this.content[2],this.content[3])){
+                return this.content[2];
+            }
+            return this.content[3];
+        }else if(this.size==2){
+            return this.content[2];
+        }else if(this.size==1){
+            return this.content[1];
+        }else{
+            return null;
+        }
     }
 
     /**
@@ -119,6 +130,30 @@ public class MinMaxHeap<Key extends Comparable<Key>> {
      * @param position The position of the node to swim in the `content` array
      */
     public void swim(int position) {
+        int depth = getNodeDepth(position);
+        int offset=2;
+        if (depth%2!=0){
+            offset=0;
+        }
+        while (position > 1 && higherThan(this.content[position/(2+offset)], this.content[position])) {
+            Key t = this.content[position/(2+offset)];
+            this.content[position/(2+offset)]=this.content[position];
+            this.content[position]=t;
+            position = position/(2+offset);
+            offset=2;
+        }
+        depth = getNodeDepth(position);
+        if (depth%2==0){
+            offset=0;
+        }
+        while (getNodeDepth(position) > 1 && lessThan(this.content[position/(2+offset)], this.content[position])) {
+            Key t = this.content[position/(2+offset)];
+            this.content[position/(2+offset)]=this.content[position];
+            this.content[position]=t;
+            position = position/(2+offset);
+            offset=2;
+        }
+
     }
 
     /**

@@ -42,7 +42,51 @@ public class RedBlackTreeConverter {
      * @return a RBNode which is the root of the equivalent RedBlackTRee
      */
     public static<Key extends Comparable<Key>> RBNode<Key> convert(TwoThreeNode<Key> twoThreeNode) {
-         return null;
+        if(twoThreeNode!=null){
+            if(twoThreeNode.is2node()){
+                RBNode<Key> tree = new RBNode(twoThreeNode.leftKey,twoThreeNode.leftValue,Color.Black,1);
+                if(twoThreeNode.isLeaf()){
+                    tree.leftChild = null;
+                    tree.rightChild = null;
+                }else {
+                    tree.leftChild = convert(twoThreeNode.leftChild);
+                    if(tree.leftChild!=null){
+                        tree.size+=tree.leftChild.size;
+                    }
+                    tree.rightChild = convert(twoThreeNode.centerChild);
+                    if(tree.rightChild!=null){
+                        tree.size+=tree.rightChild.size;
+                    }
+                }
+                return tree;
+            }else{
+                RBNode<Key> tree = new RBNode(twoThreeNode.rightKey,twoThreeNode.rightValue,Color.Black,1);
+                tree.leftChild = new RBNode(twoThreeNode.leftKey,twoThreeNode.leftValue,Color.Red,1);
+                if(twoThreeNode.isLeaf()){
+                    tree.leftChild.leftChild = null;
+                    tree.leftChild.rightChild = null;
+                    tree.rightChild = null;
+                }else{
+                    tree.leftChild.leftChild = convert(twoThreeNode.leftChild);
+                    if(tree.leftChild.leftChild!=null){
+                        tree.leftChild.size+=tree.leftChild.leftChild.size;
+                    }
+                    tree.leftChild.rightChild = convert(twoThreeNode.centerChild);
+                    if(tree.leftChild.rightChild!=null){
+                        tree.leftChild.size+=tree.leftChild.rightChild.size;
+                    }
+                    tree.rightChild = convert(twoThreeNode.rightChild);
+                    if(tree.rightChild!=null){
+                        tree.size+=tree.rightChild.size;
+                    }
+                }
+                if(tree.leftChild!=null){
+                    tree.size+=tree.leftChild.size;
+                }
+                return tree;
+            }
+        }
+        return null;
     }
     
     public static enum Color {

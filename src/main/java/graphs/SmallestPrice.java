@@ -48,11 +48,66 @@ public class SmallestPrice {
      */
     public static int getSmallestPrice(WeightedGraph graph, int source, int maxTime, List<Pair> destinations) {
         // TODO
-         return -1;
+        int minPrice=Integer.MAX_VALUE;
+        int[] distTo = new int[graph.V()];
+        Arrays.fill(distTo, Integer.MAX_VALUE);
+        distTo[source] = 0;
+        HashMap<Integer, Integer> destinationsMap = new HashMap<>();
+        for (Pair pair : destinations) {
+            destinationsMap.put(pair.getNode(), pair.getPrice());
+        }
 
+        PriorityQueue<Node> available = new PriorityQueue<>();
+        available.add(new Node(source,0));
+
+        while (!available.isEmpty()){
+            Node node = available.poll();
+            int u = node.getNode();
+            Integer value = destinationsMap.get(u);
+            if (value != null) {
+                minPrice = Math.min(value, minPrice);
+                destinationsMap.remove(u);
+            }
+            if (destinationsMap.size() == 0) {
+                break;
+            }
+
+            for(DirectedEdge edge : graph.adj[u]){
+                if(distTo[edge.w]>distTo[edge.v]+edge.weight && distTo[edge.v]+edge.weight<=maxTime){
+                    distTo[edge.w]=distTo[edge.v]+edge.weight;
+                    available.add(new Node(edge.w,distTo[edge.w]));
+                }
+            }
+        }
+        if(minPrice==Integer.MAX_VALUE){
+            return -1;
+        }
+        return minPrice;
     }
 
 
+    static class Node implements Comparable<Node> {
+        private final int node;
+        private final int weight;
+
+        public Node(int node, int weight) {
+            this.node = node;
+            this.weight = weight;
+        }
+
+        public int getNode() {
+            return node;
+        }
+
+        public int getWeight() {
+            return weight;
+        }
+
+        @Override
+        public int compareTo(Node o) {
+            return weight - o.weight;
+        }
+    }
 
 
     static class Pair {

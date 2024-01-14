@@ -39,9 +39,30 @@ import java.util.stream.Collectors;
  * ________
  *
  *
- * We ask you to compute, gien a set of building, their skyline.
+ * We ask you to compute, given a set of building, their skyline.
  */
 public class Skyline {
+
+    public static class BuildingPoint implements Comparable<BuildingPoint>{
+        int x;
+        boolean isStart;
+        int height;
+
+        public BuildingPoint(int x, boolean isStart, int height){
+            this.x = x;
+            this.isStart = isStart;
+            this.height = height;
+        }
+
+        @Override
+        public int compareTo(BuildingPoint o) {
+            if(this.x!=o.x){
+                return this.x-o.x;
+            }else{
+                return (this.isStart ? -this.height : this.height) - (o.isStart ? -o.height : o.height);
+            }
+        }
+    }
 
 
     /**
@@ -56,7 +77,31 @@ public class Skyline {
      *          The key points are sorted by their x-coordinate in the list.
      */
     public static List<int[]> getSkyline(int[][] buildings) {
-		 return null;
+        BuildingPoint[] points = new BuildingPoint[buildings.length*2];
+        int i = 0;
+        for(int[] building : buildings){
+            points[i]=new BuildingPoint(building[0],true,building[1]);
+            points[i+1]=new BuildingPoint(building[2],false,building[1]);
+            i+=2;
+        }
+        Arrays.sort(points);
+        List<int[]> skyline = new ArrayList<>();
+        TreeMap<Integer,Integer> queue = new TreeMap<>();
+        queue.put(0,1);
+        int prevMax = 0;
+        for(BuildingPoint point : points){
+            if(point.isStart){
+                queue.compute(point.height,(key,value) -> (value!=null) ? value+1 : 1);
+            }else{
+                queue.compute(point.height,(key,value) -> (value==1) ? null : value-1);
+            }
+            int currentMax = queue.lastKey();
+            if(prevMax != currentMax){
+                skyline.add(new int[]{point.x, currentMax});
+                prevMax = currentMax;
+            }
+        }
+        return skyline;
     }
 
 }

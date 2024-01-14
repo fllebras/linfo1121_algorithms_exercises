@@ -12,6 +12,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.*;
+// BEGIN STRIP
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+// END STRIP
 @ExtendWith(ConditionalOrderingExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Grade
@@ -95,5 +101,77 @@ public class MineClimbingTest {
         assertEquals(221, MineClimbing.best_distance(map, 3, 3, 0, 0));
     }
 
+    // BEGIN STRIP
+    static Stream<Instance> dataProvider() {
+        return IntStream.range(0, 100).mapToObj(i -> new Instance("data/graphs.MineClimbing/in_rand_" + i));
+    }
+
+    @ParameterizedTest
+    @Grade(value = 1, cpuTimeout = 1000)
+    @MethodSource("dataProvider")
+    @Order(1)
+    public void randomTest(Instance instance) throws Exception {
+        for (int i = 0; i < instance.nTests; i++) {
+            List<Integer> coords = instance.tests.get(i);
+            int student = MineClimbing.best_distance(instance.mine, coords.get(0), coords.get(1), coords.get(2), coords.get(3));
+            int sol = instance.solutions.get(i);
+            assertEquals(student, sol);
+        }
+    }
+
+    static Stream<Instance> dataProviderComplexity() {
+        return Stream.of(
+                new Instance("data/graphs.MineClimbing/in_comp_0"),
+                new Instance("data/graphs.MineClimbing/in_comp_1")
+        );
+    }
+
+    @ParameterizedTest
+    @Grade(value = 1, cpuTimeout = 10000)
+    @MethodSource("dataProviderComplexity")
+    @Order(2)
+    public void complexityTest(Instance instance) {
+        for (int i = 0; i < instance.nTests; i++) {
+            List<Integer> coords = instance.tests.get(i);
+            MineClimbing.best_distance(instance.mine, coords.get(0), coords.get(1), coords.get(2), coords.get(3));
+        }
+    }
+
+    static class Instance {
+
+        int[][] mine;
+        int nTests;
+        List<List<Integer>> tests;
+        List<Integer> solutions;
+
+        public Instance(String file) {
+
+            try {
+                Scanner dis = new Scanner(new FileInputStream(file));
+                int size = dis.nextInt();
+                mine = new int[size][size];
+                for (int i = 0; i < size; i++) {
+                    for (int j = 0; j < size; j++) {
+                        mine[i][j] = dis.nextInt();
+                    }
+                }
+                nTests = dis.nextInt();
+                tests = new ArrayList<>();
+                solutions = new ArrayList<>();
+                for (int i = 0; i < nTests; i++) {
+                    ArrayList<Integer> test = new ArrayList<>();
+                    for (int j = 0; j < 4; j++) {
+                        test.add(dis.nextInt());
+                    }
+                    tests.add(test);
+                    solutions.add(dis.nextInt());
+                }
+
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+    // END STRIP
 
 }

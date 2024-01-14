@@ -45,7 +45,14 @@ package graphs;
 public class GlobalWarming {
 
     int nIsland;
-    Point[][]id;
+    Point[][] id;
+    int[][] sz;
+    boolean[][] island;
+
+    int[][] ccid;
+    int rows, cols;
+    int[][] altitude;
+    int waterLevel;
 
 
 
@@ -57,34 +64,117 @@ public class GlobalWarming {
      * @param waterLevel the water level under which the entries are submerged
      */
     public GlobalWarming(int [][] altitude, int waterLevel) {
-
-        id=new Point[altitude.length][altitude[0].length];
-        nIsland=id.length*id[0].length;
-        for(int i = 0; i<altitude.length; i++){
-            for(int j = 0; j<altitude[i].length; j++){
-                if(altitude[i][j]>waterLevel){
-                    id[i][j]= new Point(i,j);
-                }else{
-                    id[i][j]= new Point(-1,-1);
-                    nIsland--;
-                }
-            }
-        }
-        for(int i = 0; i<id.length; i++){
-            for(int j = 0; j<id[i].length-1; j++){
-                if(!id[i][j].equals(new Point(-1,-1)) && !id[i][j+1].equals(new Point(-1,-1))){
-                    nIsland--;
-                    id[i][j+1]=id[i][j];
-                }
-                if(i!=id.length-1){
-                    if(!id[i][j].equals(new Point(-1,-1)) && !id[i+1][j].equals(new Point(-1,-1))){
-                        nIsland--;
-                        id[i+1][j]=id[i][j];
+        this.altitude=altitude;
+        this.waterLevel=waterLevel;
+        rows = altitude.length;
+        cols = altitude[0].length;
+        island=new boolean[rows][cols];
+        ccid=new int[rows][cols];
+        for(int x = 0; x<rows; x++){
+            for(int y = 0; y<cols; y++){
+                if(altitude[x][y] > waterLevel){
+                    if(!island[x][y]){
+                        dfs(x,y);
+                        nIsland++;
                     }
                 }
             }
         }
+        //with union-find
+        /*
+        int l = altitude[0].length;
+        island=new boolean[altitude.length][l];
+        id = new Point[altitude.length][l];
+        nIsland = altitude.length*l;
+        sz = new int[altitude.length][l];
+        for(int i = 0; i<altitude.length; i++){
+            for(int j = 0; j<l; j++){
+                id[i][j]= new Point(i,j);
+                sz[i][j]=1;
+            }
+        }
+
+        for(int i = 0; i<altitude.length-1; i++){
+            for(int j = 0; j<l-1; j++){
+                if(altitude[i][j]<=waterLevel){
+                    nIsland--;
+                    island[i][j]=false;
+                }else{
+                    island[i][j]=true;
+                    if((altitude[i][j]>waterLevel && altitude[i][j+1]>waterLevel)&&(!onSameIsland(id[i][j],id[i][j+1]))){
+                        union(id[i][j],id[i][j+1]);
+                    }
+                    if((altitude[i][j]>waterLevel && altitude[i+1][j]>waterLevel)&&(!onSameIsland(id[i][j],id[i+1][j]))){
+                        union(id[i][j],id[i+1][j]);
+                    }
+                }
+            }
+            if(altitude[i][l-1]<=waterLevel){
+                nIsland--;
+                island[i][l-1]=false;
+            }else{
+                island[i][l-1]=true;
+                if((altitude[i][l-1]>waterLevel && altitude[i+1][l-1]>waterLevel)&&(!onSameIsland(id[i][l-1],id[i+1][l-1]))){
+                    union(id[i][l-1],id[i+1][l-1]);
+                }
+            }
+        }
+        for(int j=0;j<l-1; j++){
+            if(altitude[altitude.length-1][j]<=waterLevel){
+                nIsland--;
+                island[altitude.length-1][j]=false;
+            }else {
+                island[altitude.length-1][j]=true;
+                if ((altitude[altitude.length-1][j]>waterLevel && altitude[altitude.length-1][j+1]>waterLevel) && (!onSameIsland(id[altitude.length-1][j], id[altitude.length-1][j+1]))) {
+                    union(id[altitude.length-1][j], id[altitude.length-1][j+1]);
+                }
+            }
+        }
+        if(altitude[altitude.length-1][l-1]<=waterLevel){
+            nIsland--;
+            island[altitude.length-1][l-1]=false;
+        }else{
+            island[altitude.length-1][l-1]=true;
+        }
+
+         */
     }
+
+    private void dfs(int x, int y){
+        island[x][y] = true;
+        ccid[x][y] = nIsland;
+
+        final int[][] pos = new int[][]{{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
+        for (int i = 0; i < 4; i++) {
+            int px = pos[i][0];
+            int py = pos[i][1];
+            int neiX = x+px;
+            int neiY = y+py;
+
+            if ((0 <= neiX && neiX < rows) && (0 <= neiY && neiY < cols) && (altitude[neiX][neiY] > waterLevel)) {
+                if(!island[neiX][neiY]){
+                    dfs(neiX,neiY);
+                }
+            }
+        }
+    }
+
+    private Point find(Point p) {
+        // Follow links to find a root.
+        while (!p.equals(id[p.x][p.y])) p = id[p.x][p.y];
+        return p;
+    }
+    public void union(Point p, Point q) {
+        Point i = find(p);
+        Point j = find(q);
+        if (i.equals(j)) return;
+        // Make smaller root point to larger one.
+        if (sz[i.x][i.y] < sz[j.x][j.y]) { id[i.x][i.y] = j; sz[j.x][j.y] += sz[i.x][i.y]; }
+        else { id[j.x][j.y] = i; sz[i.x][i.y] += sz[j.x][j.y]; }
+        nIsland--;
+    }
+
+
 
     /**
      * Returns the number of island
@@ -104,7 +194,19 @@ public class GlobalWarming {
      * @param p2 the second point to compare
      */
     public boolean onSameIsland(Point p1, Point p2) {
-        return id[p1.getX()][p1.getY()].equals(id[p2.getX()][p2.getY()]);
+        if(!island[p1.x][p1.y] || !island[p2.x][p2.y]){
+            return false;
+        }
+        return ccid[p1.x][p1.y]==ccid[p2.x][p2.y];
+
+        //with union-find
+        /*
+        if(!island[p1.x][p1.y] || !island[p2.x][p2.y]){
+            return false;
+        }
+        return find(p1).equals(find(p2));
+
+         */
     }
 
 

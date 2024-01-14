@@ -20,14 +20,37 @@ import java.util.List;
  *
  */
 public class ConnectedComponents {
+    private static class CC{
+        private boolean[] marked;
+        private int[] id;
+        private int count;
+        public CC(Graph G) {
+            marked = new boolean[G.V()];
+            id = new int[G.V()];
+            for (int s = 0; s < G.V(); s++)
+                if (!marked[s])
+                {
+                    dfs(G, s);
+                    count++;
+                }
+        }
+        private void dfs(Graph G, int v) {
+            marked[v] = true;
+            id[v] = count;
+            for (int w : G.adj(v))
+                if (!marked[w])
+                    dfs(G, w);
+        }
 
+    }
 
     /**
      * @return the number of connected components in g
      */
     public static int numberOfConnectedComponents(Graph g) {
         // TODO
-         return -1;
+        CC cc = new CC(g);
+        return cc.count;
     }
 
     static class Graph {

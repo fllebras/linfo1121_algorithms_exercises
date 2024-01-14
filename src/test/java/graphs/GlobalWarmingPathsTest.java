@@ -113,6 +113,47 @@ public class GlobalWarmingPathsTest {
         return true;
     }
 
+    // BEGIN STRIP
+    @Test
+    @Grade(value= 1)
+    @Order(3)
+    public void testCorrectnessShortestPath() {
+        assertTrue(correctnessShortestPath());
+    }
+
+    private boolean correctnessShortestPath() {
+        int level = 200000;
+        for (int k = 0; k < 50; k++) {
+            int [][] matrix = getRandomMatrix(50,1000000);
+            GlobalWarmingPaths g1 = new GlobalWarmingPaths(matrix,level);
+
+            for (int i = 0; i < 50; i++) {
+                for (int j = 0; j < 50-3; j++) {
+                    if (matrix[i][j] > level && matrix[i][j+1] > level && matrix[i][j+2] > level) {
+
+                        List<GlobalWarmingPaths.Point> path = g1.shortestPath(point(i,j),point(i,j+2));
+
+                        if (path.size() != 3 && !validPath(matrix,level,point(i,j),point(i,j+2),path)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        int [][] matrix = getSimpleMatrix();
+        GlobalWarmingPaths warming = new GlobalWarmingPaths(matrix,0);
+
+        List<GlobalWarmingPaths.Point> path2 = warming.shortestPath(point(4,5),point(1,7));
+        if (!validPath(matrix,0,point(4,5),point(1,7),path2)) {
+            return false;
+        }
+
+        if (path2.size() != 8) {
+            return false;
+        }
+        return true;
+    }
+    // END STRIP
 
 
     public boolean validPath(int [][] matrix, int level, GlobalWarmingPaths.Point p1, GlobalWarmingPaths.Point p2, List<GlobalWarmingPaths.Point> path) {
@@ -135,6 +176,32 @@ public class GlobalWarmingPathsTest {
         return Math.abs(p1.getX() - p2.getX()) + Math.abs(p1.getY() - p2.getY()) == 1;
     }
 
+    // BEGIN STRIP
+    @Test
+    @Grade(value= 1, cpuTimeout=10)
+    @Order(4)
+    public void timeComplexityConstructorCorrect() {
+        final int [][] matrix = getRandomMatrix(100,2000000);
+        new GlobalWarmingPaths(matrix,1000000 );
+    }
+
+    @Grade(value= 1, cpuTimeout=250)
+    @Order(5)
+    public void timeComplexityShortestPath() {
+        final int [][] matrix = getRandomMatrix(70,2000000);
+        final GlobalWarmingPaths g = new GlobalWarmingPaths(matrix,1000000 );
+
+        long t0 = System.currentTimeMillis();
+        int n = matrix.length;
+        for (int i = 0; i < n; i++){
+            for (int j = 0; j < n; j++) {
+                g.shortestPath(point(i,j),point(n-1,n-1));
+            }
+        }
+        long t1 = System.currentTimeMillis();
+        System.out.println("time shortestPath:"+(t1-t0));
+
+    }
+    // END STRIP
 
 }
-

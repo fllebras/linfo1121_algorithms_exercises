@@ -84,7 +84,52 @@ public class DroneContest {
      */
     public static LinkedList<HeightChange> findHighest(Drone[] participants) {
         // TODO
-         return null;
+        DronePoint[] points = new DronePoint[participants.length*2];
+        int index = 0;
+        for(Drone drone : participants){
+            points[index] = new DronePoint(drone.start,true,drone.height);
+            points[index+1]= new DronePoint(drone.end, false, drone.height);
+            index+=2;
+        }
+        Arrays.sort(points);
+        TreeMap<Integer, Integer> queue = new TreeMap<>();
+        queue.put(0,1);
+        int prevMaxHeight = 0;
+        LinkedList<HeightChange> result = new LinkedList<>();
+        result.add(new HeightChange(0,0));
+        for(DronePoint point : points){
+            if(point.isStart){
+                queue.compute(point.height, (key,value) -> (value!=null) ? value + 1 : 1);
+            }else{
+                queue.compute(point.height, (key,value) -> (value==1) ? null : value -1);
+            }
+            int currentMaxHeight = queue.lastKey();
+            if(currentMaxHeight!=prevMaxHeight){
+                result.add(new HeightChange(point.x,currentMaxHeight));
+                prevMaxHeight=currentMaxHeight;
+            }
+        }
+        return result;
+    }
+
+    public static class DronePoint implements Comparable<DronePoint>{
+        int x;
+        boolean isStart;
+        int height;
+        public DronePoint (int x, boolean isStart, int height){
+            this.x = x;
+            this.isStart = isStart;
+            this.height = height;
+        }
+
+        @Override
+        public int compareTo(DronePoint o) {
+            if (this.x != o.x){
+                return this.x-o.x;
+            }else{
+                return(this.isStart ? -this.height : this.height) - (o.isStart ? -o.height: o.height);
+            }
+        }
     }
 
 

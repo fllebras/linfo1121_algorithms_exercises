@@ -1,6 +1,7 @@
 package graphs;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -52,6 +53,23 @@ public class BreadthFirstShortestPaths {
     // Breadth-first search from multiple sources
     private void bfs(Graph G, Iterable<Integer> sources) {
         // TODO
+        LinkedList<Integer> queue = new LinkedList<>();
+        for(Integer s : sources){
+            marked[s] = true; // Mark the source
+            queue.add(s); // and put it on the queue.
+            distTo[s]=0;
+        }
+        while (!queue.isEmpty())
+        {
+            int v = queue.remove(); // Remove next vertex from the queue.
+            for (int w : G.adj(v))
+                if (!marked[w]) // For every unmarked adjacent vertex,
+                {
+                    distTo[w] = distTo[v]+1; // save last edge on a shortest path,
+                    marked[w] = true; // mark it because path is known,
+                    queue.add(w); // and add it to the queue.
+                }
+        }
     }
 
     /**
@@ -62,7 +80,7 @@ public class BreadthFirstShortestPaths {
      */
     public boolean hasPathTo(int v) {
         // TODO
-         return false;
+        return marked[v];
     }
 
     /**
@@ -74,7 +92,7 @@ public class BreadthFirstShortestPaths {
      */
     public int distTo(int v) {
         // TODO
-         return -1;
+         return distTo[v];
     }
 
     static class Graph {

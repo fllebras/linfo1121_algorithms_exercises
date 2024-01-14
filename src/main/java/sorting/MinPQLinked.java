@@ -166,9 +166,64 @@ public class MinPQLinked<Key> {
      */
     public Key delMin() {
         // TODO (unfold the comment on top of the file to read the instructions)
-         return null;
+        Key value = root.value;
+        if(root.size==1){
+            root = null;
+            return value;
+        }
+        root.value=retrieveNodeInLastLayer();
+        sink(root);
+        return value;
     }
 
+    private void sink(Node n) {
+        while(n.left!=null){
+            if(n.right!=null && greater(n.left,n.right)){
+                if (!greater(n,n.right)){
+                    break;
+                }
+                exch(n,n.right);
+                n=n.right;
+            }else{
+                if (!greater(n,n.left)){
+                    break;
+                }
+                exch(n,n.left);
+                n=n.left;
+            }
+        }
+    }
+
+    private Key retrieveNodeInLastLayer() {
+        Key value;
+        Node current = root;
+        current.size--;
+        while (current.left != null && current.right != null) {
+            // both left and right are not null
+            if(current.left.size==current.right.size){
+                current = current.right; // follow right direction
+            }
+            else if (isPowerOfTwo(current.left.size+1) && !isPowerOfTwo(current.right.size+1)) {
+                // left is complete and there is fewer in right subtree
+                current = current.right; // follow right direction
+            } else {
+                current = current.left; // follow left direction
+            }
+            current.size--; // because we remove a node from the current node
+        }
+        // remove the last node
+        if (current.left == null) {
+            value = current.value;
+            current = current.parent;
+            current.right = null;
+            return value;
+        } else {
+            assert (current.right == null);
+            value = current.left.value;
+            current.left = null;
+            return value;
+        }
+    }
 
 
     /***************************************************************************

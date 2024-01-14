@@ -74,8 +74,31 @@ public class Monkeys {
      * the size of the input.
      */
     public static long evaluateRoot(List<Monkey> input) {
-         return -1;
+        Hashtable<String,Monkey> t = new Hashtable<>();
+        for (Monkey m : input){
+            t.put(m.name,m);
+        }
+        return evaluateMonkey("root",t);
+    }
 
+    public static long evaluateMonkey(String name, Hashtable<String,Monkey> t){
+        Monkey monkey = t.get(name);
+        if (monkey instanceof YellingMonkey){
+            return ((YellingMonkey) monkey).number;
+        }
+        if (monkey instanceof OperationMonkey){
+            switch (((OperationMonkey) monkey).op){
+                case '+':
+                    return evaluateMonkey(((OperationMonkey) monkey).leftMonkey,t) + evaluateMonkey(((OperationMonkey) monkey).rightMonkey,t);
+                case '-':
+                    return evaluateMonkey(((OperationMonkey) monkey).leftMonkey,t) - evaluateMonkey(((OperationMonkey) monkey).rightMonkey,t);
+                case '*':
+                    return evaluateMonkey(((OperationMonkey) monkey).leftMonkey,t) * evaluateMonkey(((OperationMonkey) monkey).rightMonkey,t);
+                case '/':
+                    return evaluateMonkey(((OperationMonkey) monkey).leftMonkey,t) / evaluateMonkey(((OperationMonkey) monkey).rightMonkey,t);
+            }
+        }
+        return 0;
     }
 
 

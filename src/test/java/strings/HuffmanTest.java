@@ -12,6 +12,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
+// BEGIN STRIP
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.File;
+import java.util.Scanner;
+import java.util.stream.Stream;
+// END STRIP
 
 @Grade
 public class HuffmanTest {
@@ -99,5 +107,45 @@ public class HuffmanTest {
         assertEquals(weightedExternalPath, weightedExternalPathLength(trie));
     }
 
+    // BEGIN STRIP
+
+    static Stream<Instance> dataProvider() {
+        return Stream.of(new File("data/strings.Huffman").listFiles())
+                .filter(file -> !file.isDirectory())
+                .map(file -> new Instance(file.getPath()));
+    }
+
+    @ParameterizedTest
+    @Grade(value = 1, cpuTimeout = 1000)
+    @GradeFeedback(message = "Sorry, something is wrong with your algorithm. Hint: debug on the small example")
+    @MethodSource("dataProvider")
+    public void test(Instance instance)  {
+        List<HuffmanNode> leaves = collectLeafNodes(instance.trie);
+        assertEquals(instance.frequencies.length, leaves.size());
+        assertTrue(checkSums(instance.trie, instance.frequencies));
+        assertEquals(instance.wepl, weightedExternalPathLength(instance.trie));
+    }
+
+    static class Instance {
+        int [] frequencies;
+        HuffmanNode trie;
+        int wepl;
+
+        public Instance(String file) {
+            try {
+                Scanner scan = new Scanner(new FileInputStream(file));
+                int n = scan.nextInt();
+                this.frequencies = new int[n];
+                for (int i = 0; i < n; i++) {
+                    this.frequencies[i] = scan.nextInt();
+                }
+                this.wepl = scan.nextInt();
+                this.trie = Huffman.buildTrie(this.frequencies);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    // END STRIP
 
 }

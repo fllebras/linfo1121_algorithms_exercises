@@ -60,11 +60,37 @@ public class SkylineTest {
         assertEquals(expected.size(), computed.size());
     }
 
+    // BEGIN STRIP
+    @Test
+    @Grade(value = 1, cpuTimeout = 2000)
+    @GradeFeedback(message = "Sorry, something is wrong with your algorithm result, debug on small examples",on= TestResultStatus.FAIL)
+    @GradeFeedback(message = "Too slow, time complexity should be O(n.log(n)), should scale on 100K buildings", on= TestResultStatus.TIMEOUT)
+    @Order(1)
+    public void timeComplexity() {
+        Random rand = new Random(0);
+        int max = 0;
+        int[][] buildings = new int[100000][3];
+        for (int i = 0; i < buildings.length; i++) {
+            int h = rand.nextInt(100000);
+            max = Math.max(max, h);
+            buildings[i][0] = 0;
+            buildings[i][1] = h;
+            buildings[i][2] = 1;
+        }
+
+        int [][] res = {{0,max},{1,0}};
+        List<int[]> expected = Arrays.asList(res);
+        List<int[]> computed = Skyline.getSkyline(buildings);
+
+        // test the expected list is equal to the computed list, element by element
+        for (int i = 0; i < expected.size(); i++) {
+            assertArrayEquals(expected.get(i), computed.get(i));
+        }
+        assertEquals(expected.size(), computed.size());
+    }
+    // END STRIP
 
 
 
 
 }
-
-
-

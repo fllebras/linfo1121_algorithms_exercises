@@ -3,6 +3,9 @@ package graphs;
 //feel free to import anything here
 
 
+import java.util.Arrays;
+import java.util.PriorityQueue;
+
 /**
  * You just bought yourself the latest game from the Majong™
  * studio (recently acquired by Macrosoft™): MineClimb™.
@@ -31,6 +34,24 @@ package graphs;
  */
 public class MineClimbing {
 
+    static class PositionAndCost implements Comparable<PositionAndCost> {
+        public int x;
+        public int y;
+        public int cost;
+
+        public PositionAndCost(int x, int y, int cost) {
+            this.x = x;
+            this.y = y;
+            this.cost = cost;
+        }
+
+        @Override
+        public int compareTo(PositionAndCost o) {
+            return -o.cost + cost;
+        }
+    }
+
+
 
     /**
      * Returns the minimum distance between (startX, startY) and (endX, endY), knowing that
@@ -45,6 +66,37 @@ public class MineClimbing {
      */
     public static int best_distance(int[][] map, int startX, int startY, int endX, int endY) {
         // TODO
-         return 0;
+        int[][] dist = new int[map.length][map[0].length];
+        for (int i=0; i<map.length;i++){
+            Arrays.fill(dist[i],Integer.MAX_VALUE);
+        }
+
+        PriorityQueue<PositionAndCost> pq = new PriorityQueue<>();
+        pq.add(new PositionAndCost(startX,startY,0));
+        dist[startX][startY]=0;
+        while(!pq.isEmpty()){
+            PositionAndCost next = pq.poll();
+            if(next.x==endX && next.y==endY){
+                break;
+            }
+            if(dist[next.x][next.y]!=next.cost){
+                continue;
+            }
+            final int[][] pos = new int[][]{{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
+
+            for (int i = 0; i < 4; i++) {
+                int x = pos[i][0];
+                int y = pos[i][1];
+                int neiX = (map.length + next.x + x) % map.length;
+                int neiY = (map[0].length + next.y + y) % map[0].length;
+
+                int add_cost = Math.abs(map[next.x][next.y] - map[neiX][neiY]);
+                if (dist[neiX][neiY] > add_cost + next.cost) {
+                    dist[neiX][neiY] = add_cost + next.cost;
+                    pq.add(new PositionAndCost(neiX, neiY, dist[neiX][neiY]));
+                }
+            }
+        }
+        return dist[endX][endY];
     }
 }

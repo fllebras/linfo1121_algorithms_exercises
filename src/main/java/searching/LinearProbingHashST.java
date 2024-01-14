@@ -87,6 +87,17 @@ public class LinearProbingHashST<Key, Value> {
      * @param capacity the capacity
      */
     protected void resize(int capacity) {
+        LinearProbingHashST<Key,Value> t;
+        t = new LinearProbingHashST<>(capacity);
+        for(int i=0;i<m;i++){
+            if(keys[i]!=null){
+                t.put(keys[i],vals[i]);
+            }
+        }
+        n=t.n;
+        m=t.m;
+        keys=t.keys;
+        vals=t.vals;
     }
 
     /**
@@ -100,6 +111,22 @@ public class LinearProbingHashST<Key, Value> {
      * @throws IllegalArgumentException if {@code key} is {@code null}
      */
     public void put(Key key, Value val) {
+        if(key==null){
+            throw new IllegalArgumentException();
+        }
+        if (n>=m/2){
+            resize(2*m);
+        }
+        int i;
+        for(i=hash(key);keys[i]!=null;i=(i+1)%m){
+            if(keys[i].equals(key)){
+                vals[i]=val;
+                return;
+            }
+        }
+        keys[i]=key;
+        vals[i]=val;
+        n++;
     }
 
     /**
@@ -111,8 +138,15 @@ public class LinearProbingHashST<Key, Value> {
      * @throws IllegalArgumentException if {@code key} is {@code null}
      */
     public Value get(Key key) {
-         return null;
-
+        if(key==null){
+            throw new IllegalArgumentException();
+        }
+        for(int i=hash(key);keys[i]!=null;i=(i+1)%m){
+            if(keys[i].equals(key)){
+                return vals[i];
+            }
+        }
+        return null;
     }
 
     /**

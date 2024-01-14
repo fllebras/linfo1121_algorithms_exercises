@@ -1,5 +1,6 @@
 package graphs;
 
+import java.util.*;
 import java.util.List;
 
 /**
@@ -87,7 +88,45 @@ public class Bubbles {
      */
     public static List<ForbiddenRelation> cleanBubbles(List<Contact> contacts, int n) {
         // TODO
-         return null;
+        HashMap<String, HashSet<String>> bubbles = new HashMap<>();
+        for (Contact c : contacts) {
+            if (!bubbles.containsKey(c.a)) {
+                bubbles.put(c.a, new HashSet<>());
+            }
+            if (!bubbles.containsKey(c.b)) {
+                bubbles.put(c.b, new HashSet<>());
+            }
+            HashSet<String> ba = bubbles.get(c.a);
+            HashSet<String> bb = bubbles.get(c.b);
+            ba.add(c.b);
+            bb.add(c.a);
+        }
+
+        List<ForbiddenRelation> forbiddenRelations = new LinkedList<>();
+
+        for (Contact c : contacts) {
+            if (!bubbles.get(c.a).contains(c.b))
+                continue;
+
+            if (bubbles.get(c.a).size() > n && bubbles.get(c.b).size() > n) {
+                forbiddenRelations.add(new ForbiddenRelation(c.a, c.b));
+                bubbles.get(c.a).remove(c.b);
+                bubbles.get(c.b).remove(c.a);
+            }
+
+        }
+
+        for (Contact c : contacts) {
+            if (!bubbles.get(c.a).contains(c.b))
+                continue;
+
+            if (bubbles.get(c.a).size() > n || bubbles.get(c.b).size() > n) {
+                forbiddenRelations.add(new ForbiddenRelation(c.a, c.b));
+                bubbles.get(c.a).remove(c.b);
+                bubbles.get(c.b).remove(c.a);
+            }
+        }
+        return forbiddenRelations;
     }
 
 }

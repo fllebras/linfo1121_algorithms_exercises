@@ -96,4 +96,82 @@ public class TaskSchedulerTest {
         assertFalse(scheduler.isValid(Arrays.asList("C", "B", "A")));
     }
 
+    // BEGIN STRIP
+
+    @Test
+    @Grade(value = 5, cpuTimeout = 1000)
+    @Order(1)
+    @GradeFeedback(message = "Sorry, something is wrong with your algorithm, debug first this small example", on = TestResultStatus.FAIL)
+    public void testRandom() {
+
+        List<String> valid = new LinkedList<>();
+        for (char i = 'A'; i < 'Z' ; i++) {
+            valid.add(i+"");
+        }
+
+        Random r = new Random(0);
+
+        // valid ones
+        for (int k = 0; k < 100; k++) {
+            TaskScheduler scheduler = new TaskScheduler();
+            for (char i = 'A'; i < 'Z' ; i++) {
+                List<String> preds = new LinkedList<>();
+                for (char j = (char)(i-1) ; j >= 'A' ; j--) {
+                    if (r.nextBoolean())
+                        preds.add(j+"");
+                }
+                scheduler.addTask(i+"", preds);
+            }
+            assertTrue(scheduler.isValid(valid));
+        }
+
+        // invalid valid ones
+        for (int k = 0; k < 100; k++) {
+            TaskScheduler scheduler = new TaskScheduler();
+            for (char i = 'A'; i < 'Z' ; i++) {
+                List<String> preds = new LinkedList<>();
+                for (char j = (char)(i-1); j >= 'A' ; j--) {
+                    if (r.nextBoolean())
+                        preds.add(j+"");
+                }
+                if (i == 'Q') {
+                    preds.add("R");
+                }
+                scheduler.addTask(i+"", preds);
+            }
+            assertFalse(scheduler.isValid(valid));
+        }
+
+    }
+
+    @Test
+    @Grade(value = 5, cpuTimeout = 1000)
+    @Order(2)
+    @GradeFeedback(message = "Time Complexity", on = TestResultStatus.FAIL)
+    public void testComplexity() {
+
+        int n = 1000;
+
+        List<String> schedule = new LinkedList<>();
+        for (int i = 0; i <= n; i++) {
+            schedule.add(i+"");
+        }
+
+        TaskScheduler scheduler = new TaskScheduler();
+        for (int i = n; i > 0; i--) {
+            List<String> preds = new LinkedList<>();
+            for (int j = 0; j < i; j++) {
+                preds.add(""+j);
+            }
+            scheduler.addTask(i+"", preds);
+        }
+        scheduler.addTask("0",Arrays.asList());
+        assertTrue(scheduler.isValid(schedule));
+
+        scheduler.addTask((n-2)+"0",Arrays.asList(""+(n-1),""+(n)));
+
+        assertFalse(scheduler.isValid(schedule));
+    }
+
+    // END STRIP
 }

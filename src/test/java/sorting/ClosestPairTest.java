@@ -55,7 +55,7 @@ public class ClosestPairTest {
     }
 
     @Test
-    @Grade(value=1) 
+    @Grade(value=1)
     @Order(1)
     public void testClosestPair0() {
         int [] input = new int [] {-5};
@@ -69,7 +69,7 @@ public class ClosestPairTest {
     }
 
     @Test
-    @Grade(value=1) 
+    @Grade(value=1)
     @Order(1)
     public void testClosestPair1() {
         int [] input = new int [] {5,10,1,150,151,155,18,50,30};
@@ -81,9 +81,9 @@ public class ClosestPairTest {
         assertEquals(2,res.length);
         assertEquals(x,res[0]+res[1]);
     }
- 
+
     @Test
-    @Grade(value=1) 
+    @Grade(value=1)
     @Order(1)
     public void testClosestPair2() {
         int [] input = new int [] {5,10,1,150,151,155,18,50,30};
@@ -96,9 +96,9 @@ public class ClosestPairTest {
         assertEquals(x,res[0]+res[1]);
     }
 
- 
+
     @Test
-    @Grade(value=1) 
+    @Grade(value=1)
     @Order(1)
     public void testClosestPair3() {
         int [] input = new int [] {5,10,1,150,151,155,18,50,30};
@@ -114,7 +114,7 @@ public class ClosestPairTest {
 
 
     @Test
-    @Grade(value=1) 
+    @Grade(value=1)
     @Order(1)
     public void testClosestPair4() {
         int [] input = new int [] {5,10,1,150,151,155,18,50,30};
@@ -128,7 +128,7 @@ public class ClosestPairTest {
     }
 
     @Test
-    @Grade(value=1) 
+    @Grade(value=1)
     @Order(1)
     public void testClosestPair5() {
         int [] input = new int [] {5,10,1,150,151,155,18,50,30};
@@ -142,7 +142,7 @@ public class ClosestPairTest {
     }
 
     @Test
-    @Grade(value=1) 
+    @Grade(value=1)
     @Order(1)
     public void testClosestPair6() {
         int [] input = new int [] {5,10,1,150,151,155,18,50,30};
@@ -157,7 +157,7 @@ public class ClosestPairTest {
 
 
     @Test
-    @Grade(value=1) 
+    @Grade(value=1)
     @Order(1)
     public void testClosestPair7() {
         int [] input = new int [] {5,10,1,75,150,151,155,18,75,50,30};
@@ -170,5 +170,44 @@ public class ClosestPairTest {
         assertEquals(10,Math.abs(x-res[0]-res[1]));
     }
 
+    // BEGIN STRIP
+    static Stream<Instance> dataProvider() {
+        return Stream.of(new File("data/sorting.ClosestPair").listFiles())
+                .filter(file -> !file.isDirectory())
+                .map(file -> new Instance(file.getPath()));
+    }
+
+
+    @ParameterizedTest
+    @Grade(value=1, cpuTimeout=1000)
+    @MethodSource("dataProvider")
+    @Order(2)
+    public void testComplexity(Instance instance) {
+        ClosestPair.closestPair(instance.input.clone(), instance.query);
+    }
+
+    private static class Instance {
+        int [] input;
+        int query;
+        int [] result;
+
+        public Instance(String file) {
+            try {
+                Scanner scan = new Scanner(new FileInputStream(file));
+                int n = scan.nextInt();
+                this.input = new int[n];
+                for (int i = 0; i < n; i++) {
+                    this.input[i] = scan.nextInt();
+                }
+                this.query = scan.nextInt();
+                this.result = new int[2];
+                result[0] = scan.nextInt();
+                result[1] = scan.nextInt();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    // END STRIP
 
 }

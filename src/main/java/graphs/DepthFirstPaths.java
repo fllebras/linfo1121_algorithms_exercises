@@ -2,6 +2,7 @@ package graphs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * Consider this class, DepthFirstPaths, which computes the paths to any connected node
@@ -50,6 +51,13 @@ public class DepthFirstPaths {
     // Depth first search from v
     private void dfs(Graph G, int v) {
         // TODO
+        marked[v]=true;
+        for (int w : G.adj(v)){
+            if (!marked[w]){
+                edgeTo[w]=v;
+                dfs(G,w);
+            }
+        }
     }
 
     /**
@@ -60,7 +68,7 @@ public class DepthFirstPaths {
      */
     public boolean hasPathTo(int v) {
         // TODO
-         return false;
+        return marked[v];
     }
 
     /**
@@ -73,7 +81,17 @@ public class DepthFirstPaths {
      */
     public Iterable<Integer> pathTo(int v) {
         // TODO
-         return null;
+        if(!hasPathTo(v)){
+            return null;
+        }
+        Stack<Integer> path = new Stack<>();
+        while (v!=this.s){
+            path.push(v);
+            v=edgeTo[v];
+
+        }
+        path.push(s);
+        return path;
     }
 
     static class Graph {
